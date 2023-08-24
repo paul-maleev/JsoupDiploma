@@ -14,6 +14,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.poi.ss.formula.functions.Column;
+import org.apache.poi.ss.usermodel.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,11 +24,12 @@ import org.jsoup.select.Elements;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFTable;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTTable;
+import java.io.*;
+import java.util.Date;
 
 public class HelloController {
     @FXML
@@ -70,7 +73,7 @@ public class HelloController {
 
         fileExtensions =
                 new FileChooser.ExtensionFilter(
-                        "Excel file", "*.xls");
+                        "Excel file", "*.xlsx");
         fileChooser.getExtensionFilters().add(fileExtensions);
 
         File selectedFile = fileChooser.showSaveDialog(stage);
@@ -89,7 +92,7 @@ public class HelloController {
         if(extension.equals("csv")) {
             saveAsCsvFile(selectedFile);
         }
-        if(extension.equals("xls")) {
+        if(extension.equals("xlsx")) {
             saveAsExcelFile(selectedFile);
         }
 
@@ -100,11 +103,11 @@ public class HelloController {
 
     @FXML
     protected void onparseDataButtonClick() {
-
-        System.out.println("onparseDataButtonClick()");
         downloadData();
-        initTable();
-
+        if(countries.size()>0) {
+            initTable();
+            saveDataButton.setDisable(false);
+        }
     }
 
     public void downloadData() {
@@ -129,14 +132,6 @@ public class HelloController {
 
         }
 
-        /*
-
-        for(int i=0;i<countries.size();i++) {
-            ObservableCountry c = countries.get(i);
-            System.out.println(c.toString());
-        }
-
-         */
     }
 
     public void initTable() {
@@ -151,11 +146,9 @@ public class HelloController {
 
         TableColumn<ObservableCountry, Integer> columnPopulation = new TableColumn<>("Population");
         columnPopulation.setCellValueFactory(new PropertyValueFactory<>("population"));
-        //columnPopulation.setCellFactory(TextFieldTableCell.forTableColumn());
 
         TableColumn<ObservableCountry, Double> columnArea = new TableColumn<>("Area");
         columnArea.setCellValueFactory(new PropertyValueFactory<>("area"));
-        //columnArea.setCellFactory(TextFieldTableCell.forTableColumn());
 
         countriesTableView.getColumns().add(columnName);
         countriesTableView.getColumns().add(columnCapital);
@@ -167,12 +160,11 @@ public class HelloController {
     private void saveAsTxtFile(File file) {
         System.out.println(file.getAbsolutePath());
         StringBuilder sb = new StringBuilder();
+        sb.append("Name Capital Population Area\n");
         for(int i=0;i<countries.size();i++) {
             ObservableCountry c = countries.get(i);
             sb.append(c.getName()+" "+c.getCapital()+" "+c.getPopulation()+" "+c.getArea()+"\n");
         }
-
-        //System.out.println(sb.toString());
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(file));
@@ -188,7 +180,6 @@ public class HelloController {
     }
 
     private void saveAsCsvFile(File file) {
-        System.out.println("saveAsCsvFile!");
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(file));
@@ -208,7 +199,36 @@ public class HelloController {
     }
 
     private void saveAsExcelFile(File file) {
-        System.out.println("saveAsExcelFile!");
+        Workbook book = new HSSFWorkbook();
+        Sheet sheet = book.createSheet("Countries");
+        Row row = sheet.createRow(0);
+        Cell cell = row.createCell(0);
+        cell.setCellValue("Name");
+        cell = row.createCell(1);
+        cell.setCellValue("Capital");
+        cell = row.createCell(2);
+        cell.setCellValue("Population");
+        cell = row.createCell(3);
+        cell.setCellValue("Area");
+        for(int i=0;i<countries.size();i++) {
+            ObservableCountry c = countries.get(i);
+            row     = sheet.createRow(i+1);
+            cell = row.createCell(0);
+            cell.setCellValue(c.getName());
+            cell = row.createCell(1);
+            cell.setCellValue(c.getCapital());
+            cell = row.createCell(2);
+            cell.setCellValue(c.getPopulation());
+            cell = row.createCell(3);
+            cell.setCellValue(c.getArea());
+        }
+        try {
+            book.write(new FileOutputStream(file));
+            book.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 

@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.jsoupdiploma.HelloController">
+<AnchorPane prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.jsoupdiploma.HelloController">
    <children>
       <TableView fx:id="countriesTableView" layoutX="14.0" layoutY="40.0" prefHeight="431.0" prefWidth="469.0">
         <columns>
@@ -14,6 +14,6 @@
         </columns>
       </TableView>
       <Button fx:id="parseDataButton" layoutX="508.0" layoutY="40.0" mnemonicParsing="false" onAction="#onparseDataButtonClick" prefHeight="25.0" prefWidth="108.0" text="Parse data" />
-      <Button fx:id="saveDataButton" layoutX="508.0" layoutY="84.0" mnemonicParsing="false" onAction="#onSaveDataButtonClick" prefHeight="25.0" prefWidth="108.0" text="Save data..." />
+      <Button fx:id="saveDataButton" disable="true" layoutX="508.0" layoutY="84.0" mnemonicParsing="false" onAction="#onSaveDataButtonClick" prefHeight="25.0" prefWidth="108.0" text="Save data..." />
    </children>
 </AnchorPane>
