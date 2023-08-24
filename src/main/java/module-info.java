@@ -5,6 +5,7 @@ module com.example.jsoupdiploma {
     requires org.apache.commons.csv;
     requires org.apache.poi.poi;
     requires org.apache.poi.ooxml;
+    requires java.desktop;
 
 
     opens com.example.jsoupdiploma to javafx.fxml;
